@@ -1,0 +1,98 @@
+﻿@model Dictionary<RobotShop.Models.Product, int>
+@{
+   ViewData["Title"] = "Sold Products";
+   Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>@ViewData["Title"]</title>
+   <link rel="icon" type="image/png" href=" @Url.Content("~/assets/mr_robot_logo.webp")" />
+   <link rel="stylesheet" href="@Url.Content("~/css/navbar.css")" />
+   <link rel="stylesheet" href="@Url.Content("~/css/order.css")" />
+</head>
+<body class="background-image">
+	<header class="header-nav">
+		<a href="@Url.Action("Index", "Home")" class="logo">
+			<img src="@Url.Content("~/assets/mr_robot_logo.webp")" alt="Mr. Robot Logo" />
+		</a>
+
+		<nav class="navbar">
+			<a href="@Url.Action("Index", "Home")" class="nav-link">
+				<i class="nav-icon">
+					<img src="@Url.Content("~/assets/boxicons/bx-home-heart.svg")" alt="home icon" />
+				</i>
+				Home
+			</a>
+			@if (User.IsInRole("Admin"))
+			{
+				<a href="@Url.Action("index", "Admin")" class="nav-link">
+					<i class="nav-icon">
+						<img src="@Url.Content("~/assets/boxicons/dashboard-solid-24.svg")" alt="dashboard icon" />
+					</i>
+					Admin Manage
+				</a>
+			}
+			<a href="@Url.Page("/Account/Manage/Index", new { area = "Identity" })" class="nav-link">
+				<i class="nav-icon">
+					<img src="@Url.Content("~/assets/boxicons/bx-cog.svg")" alt="settings icon" />
+				</i>
+				Settings
+			</a>
+		</nav>
+		<partial name="_LoginPartial" />
+	</header>
+
+   <div class="order-summary-container">
+      <h1 class="order-title">📦 Sold Products</h1>
+      <table class="table order-table">
+         <thead>
+            <tr>
+               <th>Product Name</th>
+               <th>Price</th>
+               <th>Quantity Sold</th>
+               <th>Total Revenue</th>
+               <th>Specification Document</th>
+            </tr>
+         </thead>
+         <tbody>
+            @if (Model != null && Model.Any())
+            {
+               @foreach (var item in Model)
+               {
+                  <tr>
+                     <td>
+                        <div class="order-item">
+                              <img src="data:image/png;base64,@(@item.Key.Image != null ? Convert.ToBase64String(@item.Key.Image) : "")"
+                                   alt="@item.Key.Name" class="order-thumbnail" />
+
+                           <span class="product-name-span">@item.Key.Name</span>
+                        </div>
+                     </td>
+                     <td>$@item.Key.Price</td>
+                     <td>@item.Value</td>
+                     <td>$@(item.Key.Price * item.Value)</td>
+                     <td>
+	                     <a href="@Url.Action("DownloadProductSpecification", "Product", new { productId = item.Key.ProductId })"
+                           class="btn-download-pdf">
+		                     📄 Download PDF
+	                     </a>
+                     </td>
+                  </tr>
+               }
+            }
+            else
+            {
+               <tr>
+                  <td colspan="5">No sold products found.</td>
+               </tr>
+            }
+         </tbody>
+      </table>
+      <a href="@Url.Action("Index", "Order")" class="btn-return">Back to Orders</a>
+   </div>
+</body>
+</html>

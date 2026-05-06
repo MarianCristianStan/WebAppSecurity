@@ -1,0 +1,55 @@
+﻿
+.user-info {
+	display: flex;
+	align-items: center;
+	gap: 10px; 
+	position: relative;
+}
+
+.user-avatar {
+	width: 5rem;
+	height: 5rem;
+	object-fit: cover;
+	border-radius: 50%;
+	border: 2px solid var(--yellow);
+	cursor: pointer;
+	transition: transform 0.3s;
+}
+
+	.user-avatar:hover {
+		transform: scale(1.1);
+	}
+
+
+#logout-btn {
+	font-size: 1.8rem;
+	background: none;
+	border: none;
+	color: var(--yellow);
+	cursor: pointer;
+	transition: transform 0.3s, color 0.3s;
+	position: absolute;
+	right: -35px;
+}
+
+	#logout-btn:hover {
+		transform: scale(1.2);
+		color: var(--white);
+	}
+
+
+@media (max-width: 768px) {
+	.user-info {
+		gap: 5px;
+	}
+
+	.user-avatar {
+		width: 35px;
+		height: 35px;
+	}
+
+	#logout-btn {
+		font-size: 1.5rem;
+		right: -30px;
+	}
+}

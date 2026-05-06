@@ -1,0 +1,236 @@
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using RobotShop.Services
+@using RobotShop.Services.Interfaces
+
+@model IEnumerable<RobotShop.Models.Product>
+@inject IUserService UserService
+@{
+   ViewData["Title"] = "Home";
+   Layout = null;
+	var searchQuery = ViewBag.searchQuery as string;
+    var selectedCategory = ViewBag.SelectedCategory as string;
+    var categories = ViewBag.Categories as IEnumerable<string>;
+	var isSpecSearch = ViewBag.IsSpecSearch as bool? ?? false;
+	var specResults = ViewBag.SpecResults as IEnumerable<SearchResult>;
+	var sortOrder = ViewBag.SortOrder as string ?? "desc";
+	var specQuery = ViewBag.SpecQuery as string ?? "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>@ViewData["Title"]</title>
+		<link rel="icon" type="image/png" href="@Url.Content("~/assets/mr_robot_logo.png")"/>
+		<link rel="stylesheet" href="@Url.Content("~/css/navbar.css")" />
+		<link rel="stylesheet" href="@Url.Content("~/css/inventory.css")" />
+		<link rel="stylesheet" href="@Url.Content("~/css/search.css")" />
+		<script defer src="@Url.Content("~/js/alert.js")"></script>
+		<script defer src="@Url.Content("~/js/search.js")"></script>
+		<script defer src="@Url.Content("~/js/searchMode.js")"></script>
+		
+	</head>
+
+	<body class="background-image">
+
+		<header class="header-nav">
+			<a href="@Url.Action("Index", "Home")" class="logo">
+				<img src="@Url.Content("~/assets/mr_robot_logo.webp")" alt="Mr Robot Logo"/>
+			</a>
+
+			<nav class="navbar">
+				<a href="@Url.Action("Index", "Home")" class="nav-link">
+					<i class="nav-icon">
+						<img src="@Url.Content("~/assets/boxicons/bx-home-heart.svg")" alt="home icon"/>
+					</i>
+					Home
+				</a>
+				<a href="@Url.Action("Index", "Cart")" class="nav-link">
+					<i class="nav-icon">
+						<img src="@Url.Content("~/assets/boxicons/cart-regular-24.svg")" alt="cart icon"/>
+						@* <span class="cart-badge">3</span> *@
+					</i>
+					Cart
+				</a>
+				<a href="@Url.Action("Index", "Order")" class="nav-link active">
+					<i class="nav-icon">
+						<img src="@Url.Content("~/assets/boxicons/bx-doughnut-chart.svg")" alt="order icon"/>
+					</i>
+					Orders
+				</a>
+
+				@if (User.IsInRole("Admin"))
+				{
+					<a href="@Url.Action("Index", "Admin")" class="nav-link">
+						<i class="nav-icon">
+							<img src="@Url.Content("~/assets/boxicons/dashboard-solid-24.svg")" alt="contact icon"/>
+						</i>
+						Admin Manage
+					</a>
+				}
+				<a href="@Url.Page("/Account/Manage/Index", new { area = "Identity" })" class="nav-link">
+					<i class="nav-icon">
+						<img src="@Url.Content("~/assets/boxicons/bx-cog.svg")" alt="settings icon"/>
+					</i>
+					Settings
+				</a>
+
+			</nav>
+		
+			<partial name="_LoginPartial"/>
+		</header>
+	
+		<div class="container" >
+		@if (TempData["ErrorMessage"] != null)
+		{
+			<div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+		}
+
+		@if (TempData["SuccessMessage"] != null)
+		{
+			<div class="alert alert-success">@TempData["SuccessMessage"]</div>
+		}
+		<h1 class="main-title">Browse Our Inventory</h1>
+
+
+		<div class="search-wrapper">
+
+			<div class="search-mode-selector">
+				<span id="label-name" class="search-label">Search by Name</span>
+
+				<label class="switch">
+					<input type="checkbox" id="searchToggle" onchange="toggleSearchForm()" @(isSpecSearch ? "checked" : "") />
+					<span class="slider"></span>
+				</label>
+
+				<span id="label-spec" class="search-label">Search in Specifications</span>
+			</div>
+
+
+				<!-- Search Bar -->
+			<div class="search-container" id="nameSearchContainer">
+				<form id="searchForm" class="filter-form" method="get">
+						<input type="text" id="searchQuery" name="searchQuery" placeholder="Search for products..." oninput="fetchSuggestions(this.value)" autocomplete="off" value="@ViewBag.searchQuery" />
+					<div id="suggestions" class="suggestions-dropdown"></div>
+					<button type="submit">Search</button>
+				</form>
+			</div>
+
+			<!-- Search Bar Lucene  -->
+			<div class="search-container" id="specSearchContainer" style="display:none;">
+				<form method="get" action="@Url.Action("SearchSpecs", "Home")" class="filter-form">
+					<input type="text" name="specQuery" placeholder="Search in specifications" value="@specQuery" />
+					<select name="sortOrder">
+						<option value="desc" selected>Sort Desc ↓</option>
+						<option value="asc">Sort Asc ↑</option>
+					</select>
+					<button type="submit">Search Specs</button>
+				</form>
+			</div>
+
+		</div>
+
+		@if (isSpecSearch && specResults != null && specResults.Any())
+		{
+			<div class="spec-results-window themed">
+				<h3 class="spec-results-title">Specification Search Results for <span>"@specQuery"</span></h3>
+				<div class="spec-results-list">
+					@foreach (var result in specResults)
+					{
+						var product = Model.FirstOrDefault(p => p.ProductId.ToString() == result.ProductId);
+						if (product != null)
+						{
+							<div class="spec-result-card dark-card">
+								<div class="spec-card-header">
+									<strong>@product.Name</strong>
+								</div>
+								<div class="spec-card-footer">
+									<span class="spec-score">Score: @Math.Round(result.Score, 2)</span>
+									<a href="@Url.Action("DownloadProductSpecification", "Product", new { productId = product.ProductId })"
+										class="btn-download-spec-pdf">
+										<i class="bx bxs-file-pdf"></i> Download PDF
+									</a>
+								</div>
+							</div>
+
+						}
+					}
+				</div>
+			</div>
+		}
+
+
+
+		<!-- Sidebar Category Menu -->
+		<div class="category-menu">
+			<h4>Categories</h4>
+			<ul>
+				@foreach (var category in ViewBag.Categories)
+				{
+					<li class="@(category.CategoryId.ToString() == ViewBag.SelectedCategory ? "active-category" : "")">
+						<a href="@Url.Action("Index", new { category = category.CategoryId })">@category.Name</a>
+					</li>
+				}
+				<li class="@(string.IsNullOrEmpty(ViewBag.SelectedCategory) ? "active-category" : "")">
+					<a href="@Url.Action("Index")">All Products</a>
+				</li>
+			</ul>
+		</div>
+
+		<!-- Product Cards -->
+		<div class="row">
+			@foreach (var product in Model)
+			{
+				<div class="card product-card">
+
+						@if (product.Image != null)
+						{
+							<img src="data:image/png;base64,@(Convert.ToBase64String(product.Image))" alt="@product.Name"/>
+						}
+						else
+						{
+							<img src="~/assets/default_product_img.jpg" alt="Default Image"/>
+						}
+				
+					<!-- Card Body -->
+					<div class="card-body">
+						<h5 class="card-title">@product.Name</h5>
+						<p class="card-brand">@product.Brand</p>
+						<p class="card-price">$@product.Price</p>
+						@if (!string.IsNullOrEmpty(product.Description))
+						{
+							<p class="card-description">@product.Description</p>
+						}
+							<div class="card-bottom">
+								<div class="pdf-download-container">
+							<a href="@Url.Action("DownloadProductSpecification", "Product", new { productId = product.ProductId })"
+								class="btn-download-pdf"
+								title="Download Product Specification">
+								<i class="bx bxs-file-pdf"></i> Specification PDF
+							</a>
+						</div>
+
+						<!-- Add to Cart Button -->
+						<form method="post" asp-controller="Cart" asp-action="AddToCart">
+							<input type="hidden" name="productId" value="@product.ProductId"/>
+							<button type="submit" class="btn-add-to-cart">Add to Cart</button>
+						</form>
+					</div>
+					 </div>
+				</div>
+			}
+		</div>
+
+		@if (!Model.Any())
+		{
+			<div class="no-products-found">
+				<i class="bx bx-error"></i>
+				<p>No products found in this category.</p>
+			</div>
+		}
+	</div>
+
+	</body>
+</html>

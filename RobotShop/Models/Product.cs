@@ -1,0 +1,46 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace RobotShop.Models
+{
+   public class Product
+   {
+      [Key]
+      [MaxLength(50)]
+      public string ProductId { get; set; } = $"PRODUCT-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+
+      [Required]
+      [MaxLength(100)]
+      public required string Name { get; set; }
+
+      [Required]
+      [MaxLength(50)]
+      public required string Brand { get; set; }
+
+      public byte[]? Image { get; set; }
+
+      [MaxLength(500)] public string? Description { get; set; }
+
+      [Required(ErrorMessage = "Price is required.")]
+      [Range(0.01, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
+      [Precision(18, 2)]
+      public decimal Price { get; set; }
+
+
+      [Required]
+      [Range(0, int.MaxValue)]
+      public int StockQuantity { get; set; }
+
+      [Required]
+      [MaxLength(50)]
+      public required string ProductCategoryId { get; set; }
+
+      [ForeignKey("ProductCategoryId")]
+      public ProductCategory? ProductCategory { get; set; }
+
+      public ICollection<ProductFeature>? ProductFeatures { get; set; } = new List<ProductFeature>();
+      public ICollection<CartProduct>? CartProducts { get; set; } = new List<CartProduct>();
+      public ICollection<OrderProduct>? OrderProducts { get; set; } = new List<OrderProduct>();
+   }
+}
