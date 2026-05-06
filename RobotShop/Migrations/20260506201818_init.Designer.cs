@@ -12,7 +12,7 @@ using RobotShop.Models;
 namespace RobotShop.Migrations
 {
     [DbContext(typeof(RobotShopContext))]
-    [Migration("20251201192733_init")]
+    [Migration("20260506201818_init")]
     partial class init
     {
         /// <inheritdoc />
