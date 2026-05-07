@@ -179,7 +179,7 @@
 				@foreach (var category in ViewBag.Categories)
 				{
 					<li class="@(category.CategoryId.ToString() == ViewBag.SelectedCategory ? "active-category" : "")">
-						<a href="@Url.Action("Index", new { category = category.CategoryId })">@category.Name</a>
+						<a href="@Url.Action("Index", new { category = category.Name })">@category.Name</a>
 					</li>
 				}
 				<li class="@(string.IsNullOrEmpty(ViewBag.SelectedCategory) ? "active-category" : "")">
