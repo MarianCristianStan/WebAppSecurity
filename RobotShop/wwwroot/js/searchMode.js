@@ -1,33 +1,47 @@
 ﻿function toggleSearchForm() {
-	const toggle = document.getElementById("searchToggle");
-	const labelName = document.getElementById("label-name");
-	const labelSpec = document.getElementById("label-spec");
-	const searchForm = document.getElementById("nameSearchContainer");
-	const specForm = document.getElementById("specSearchContainer");
+   const toggle = document.getElementById("searchToggle");
 
-	// Ascunde ambele fără flicker
-	searchForm.classList.remove("active");
-	specForm.classList.remove("active");
+   const labelName = document.getElementById("label-name");
+   const labelSpec = document.getElementById("label-spec");
 
-	setTimeout(() => {
-		if (toggle.checked) {
-			searchForm.style.display = "none";
-			specForm.style.display = "block";
-			specForm.classList.add("active");
+   const nameContainer = document.getElementById("nameSearchContainer");
+   const specContainer = document.getElementById("specSearchContainer");
 
-			labelSpec.classList.add("active");
-			labelName.classList.remove("active");
-		} else {
-			specForm.style.display = "none";
-			searchForm.style.display = "block";
-			searchForm.classList.add("active");
+   const nameInput = document.getElementById("searchQuery");
+   const specInput = specContainer.querySelector("input[name='specQuery']");
 
-			labelName.classList.add("active");
-			labelSpec.classList.remove("active");
-		}
-	}, 50); // Mic delay pentru tranziție
+   nameContainer.classList.remove("active");
+   specContainer.classList.remove("active");
+
+   if (toggle.checked) {
+      nameContainer.style.display = "none";
+      specContainer.style.display = "block";
+
+      nameInput.disabled = true;
+      specInput.disabled = false;
+
+      labelSpec.classList.add("active");
+      labelName.classList.remove("active");
+
+      setTimeout(() => specContainer.classList.add("active"), 10);
+   } else {
+      specContainer.style.display = "none";
+      nameContainer.style.display = "block";
+
+      specInput.disabled = true;
+      nameInput.disabled = false;
+
+      labelName.classList.add("active");
+      labelSpec.classList.remove("active");
+
+      setTimeout(() => nameContainer.classList.add("active"), 10);
+   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	toggleSearchForm(); // Inițializează corect la load
+   const toggle = document.getElementById("searchToggle");
+
+   toggleSearchForm();
+
+   toggle.addEventListener("change", toggleSearchForm);
 });
