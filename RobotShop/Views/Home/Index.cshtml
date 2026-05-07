@@ -116,15 +116,15 @@
 					<div id="suggestions" class="suggestions-dropdown"></div>
 					<button type="submit">Search</button>
 				</form>
-				@if (ViewBag.searchQuery != null)
-				 {
-					  <div class="search-results-label">
-							<p> Rezultate pentru: @Html.Raw(ViewBag.searchQuery) </p>
-					  </div>
-	 
-				 }
+				
 			</div>
+			@if (ViewBag.searchQuery != null)
+			{
+				<div class="search-results-label">
+					<p> Results for: @Html.Raw(ViewBag.searchQuery) </p>
+				</div>
 
+			}
 			<!-- Search Bar Lucene  -->
 			<div class="search-container" id="specSearchContainer" style="display:none;">
 				<form method="get" action="@Url.Action("SearchSpecs", "Home")" class="filter-form">
