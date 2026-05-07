@@ -116,6 +116,13 @@
 					<div id="suggestions" class="suggestions-dropdown"></div>
 					<button type="submit">Search</button>
 				</form>
+				@if (ViewBag.searchQuery != null)
+				 {
+					  <div class="search-results-label">
+							<p> Rezultate pentru: @Html.Raw(ViewBag.searchQuery) </p>
+					  </div>
+	 
+				 }
 			</div>
 
 			<!-- Search Bar Lucene  -->

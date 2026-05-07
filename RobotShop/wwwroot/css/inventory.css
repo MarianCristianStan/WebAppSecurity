@@ -331,6 +331,23 @@
 			color: lightcoral;
 		}
 
+.search-results-label {
+	text-align: center;
+	margin-top: 1rem;
+	color: var(--yellow);
+	font-size: 1rem;
+	font-weight: bold;
+	padding: 1rem;
+	background: rgba(0, 0, 0, 0.6);
+	border-radius: 10px;
+}
+
+	.search-results-label i {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+		display: block;
+		color: lightcoral;
+	}
 
 	/*DASHBOARD*/
 
