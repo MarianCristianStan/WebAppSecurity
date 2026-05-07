@@ -15,5 +15,20 @@ namespace RobotShop.Repositories
       {
          return _context.Set<Product>().Where(expression).AsNoTracking();
       }
-   }
+      public IEnumerable<Product> FindByCategory(string categoryId)
+{
+          // Construim baza query-ului
+          string sql = "SELECT * FROM Products WHERE 1=1";
+
+          if (!string.IsNullOrEmpty(categoryId))
+          {
+              sql += " AND ProductCategoryId = '" + categoryId + "'";
+          }
+
+    
+      
+
+          return _context.Products.FromSqlRaw(sql).AsNoTracking().ToList();
+      }
+         }
 }

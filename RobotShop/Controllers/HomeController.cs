@@ -40,7 +40,9 @@ namespace RobotShop.Controllers
          ViewBag.IsAuthenticated = user != null;
          ViewBag.IsAdmin = user != null && await _userService.IsUserAdminAsync(user);
 
-         List<Product> products = _productService.GetAll();
+			// List<Product> products = _productService.GetAll();
+			
+			IEnumerable<Product> products = _productService.GetProductsByCategory(category);
          List<ProductCategory> categories = _productCategoryService.GetAll();
 
          if (categories == null || !categories.Any())
@@ -49,13 +51,10 @@ namespace RobotShop.Controllers
          }
          ViewBag.Categories = categories;
 
-
-         if (!string.IsNullOrEmpty(category))
-         {
-	         products = products.Where(p => p.ProductCategoryId.ToString() == category).ToList();
-	         ViewBag.SelectedCategory = category;
-         }
-
+			if (!string.IsNullOrEmpty(category))
+			{
+				ViewBag.SelectedCategory = category;
+			}
 			if (!string.IsNullOrEmpty(searchQuery))
          {
 	         products = products
@@ -68,10 +67,10 @@ namespace RobotShop.Controllers
 	         ViewBag.searchQuery = searchQuery;
          }
 
-			foreach (var product in products)
+	/*		foreach (var product in products)
          {
 	         product.ProductCategory = _productCategoryService.GetById(product.ProductCategoryId);
-         }
+         }*/
          return View(products);
 			
       }

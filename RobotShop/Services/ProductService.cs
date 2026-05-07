@@ -14,9 +14,9 @@ namespace RobotShop.Services
 			_repositoryWrapper = repositoryWrapper;
 		}
 
-		public List<Product> GetProductsByCategory(string categoryId)
+		public IEnumerable<Product> GetProductsByCategory(string categoryId)
 		{
-			return _repositoryWrapper.ProductRepository.FindByCondition(p => p.ProductCategoryId == categoryId).ToList();
+			return _repositoryWrapper.ProductRepository.FindByCategory(categoryId);
 		}
 
 		public IEnumerable<Product> SearchProducts(string searchTerm)
@@ -30,7 +30,6 @@ namespace RobotShop.Services
 				.FindByCondition(p => p.Name.Contains(searchTerm) || (p.Description != null && p.Description.Contains(searchTerm)));
 		}
 
-      
-
-    }
+		
+	}
 }
