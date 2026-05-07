@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using RobotShop.Models;
 using RobotShop.Services;
-
+using System.Text.RegularExpressions;
 namespace RobotShop.Controllers
 {
    public class HomeController : Controller
@@ -58,7 +58,12 @@ namespace RobotShop.Controllers
 
 			if (!string.IsNullOrEmpty(searchQuery))
          {
-	         products = products
+				if (!IsValidSearch(searchQuery))
+				{
+					TempData["ErrorMessage"] = "Something went wrong";
+					return RedirectToAction("Index", new { category = category });
+				}
+				products = products
 		         .Select(p => new { Product = p, Score = _tfidfSearchService.ComputeTFIDF(p.Name, searchQuery) })
 		         .Where(p => p.Score > 0) 
 		         .OrderByDescending(p => p.Score)
@@ -81,6 +86,11 @@ namespace RobotShop.Controllers
 		{
 			if (string.IsNullOrWhiteSpace(specQuery))
 			{
+				return RedirectToAction("Index");
+			}
+			if (!IsValidSearch(specQuery))
+			{
+				TempData["ErrorMessage"] = "Something went wrong";
 				return RedirectToAction("Index");
 			}
 
@@ -131,7 +141,18 @@ namespace RobotShop.Controllers
          return Json(suggestions);
       }
 
-		
+		private bool IsValidSearch(string input)
+		{
+			if (string.IsNullOrEmpty(input)) return true;
+			// \p{L} - orice litera (Unicode)
+			// \p{N} - orice cifra
+			// \s - spatii
+			// -()#+™®©. -simboluri tech
+			var safePattern = new Regex(@"^[\p{L}\p{N}\s.,!?#+\-()™®©]+$");
+
+			return safePattern.IsMatch(input);
+		}
+
 		public IActionResult Login()
       {
          return RedirectToPage("/Account/Login", new { area = "Identity" });

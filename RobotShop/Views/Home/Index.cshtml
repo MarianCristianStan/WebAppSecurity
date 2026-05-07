@@ -117,6 +117,13 @@
 					<button type="submit">Search</button>
 				</form>
 			</div>
+			@if (ViewBag.searchQuery != null)
+			{
+				<div class="search-results-label">
+					<p> Results for:  @Html.Raw(ViewBag.searchQuery) </p>
+				</div>
+
+			}
 
 			<!-- Search Bar Lucene  -->
 			<div class="search-container" id="specSearchContainer" style="display:none;">
@@ -129,9 +136,10 @@
 					<button type="submit">Search Specs</button>
 				</form>
 			</div>
-
+			
 		</div>
 
+	
 		@if (isSpecSearch && specResults != null && specResults.Any())
 		{
 			<div class="spec-results-window themed">
