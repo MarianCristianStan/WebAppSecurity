@@ -111,7 +111,8 @@
 
 				<!-- Search Bar -->
 			<div class="search-container" id="nameSearchContainer">
-				<form id="searchForm" class="filter-form" method="get">
+				<form id="searchForm" class="filter-form" method="get" action="@Url.Action("Index", "Home")">
+					
 						<input type="text" id="searchQuery" name="searchQuery" placeholder="Search for products..." oninput="fetchSuggestions(this.value)" autocomplete="off" value="@ViewBag.searchQuery" />
 					<div id="suggestions" class="suggestions-dropdown"></div>
 					<button type="submit">Search</button>
