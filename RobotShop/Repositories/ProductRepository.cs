@@ -17,15 +17,19 @@ namespace RobotShop.Repositories
       }
       public IEnumerable<Product> FindByCategory(string categoryId)
 {
-         
-          string sql = "SELECT * FROM Products WHERE 1=1";
+  
+			string sql;
 
-          if (!string.IsNullOrEmpty(categoryId))
-          {
-              sql += " AND ProductCategoryId = '" + categoryId + "'";
-          }
-
-          return _context.Products.FromSqlRaw(sql).AsNoTracking().ToList();
-      }
+			if (string.IsNullOrEmpty(categoryId))
+			{
+				sql = "SELECT * FROM Products";
+				return _context.Products.FromSqlRaw(sql).AsNoTracking().ToList();
+			}
+			else
+			{
+				sql = "SELECT * FROM Products WHERE ProductCategoryId = '" + categoryId + "'";
+				return _context.Products.FromSqlRaw(sql, categoryId).AsNoTracking().ToList();
+			}
+		}
          }
 }
