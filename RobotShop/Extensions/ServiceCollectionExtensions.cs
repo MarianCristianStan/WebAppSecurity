@@ -14,8 +14,15 @@ namespace RobotShop.Extensions
    {
       public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration configuration)
       {
-         // Add controllers and views
-         services.AddControllersWithViews();
+
+			services.ConfigureApplicationCookie(options =>
+			{
+				options.Cookie.HttpOnly = false;
+				options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+
+			});
+			
+			services.AddControllersWithViews();
          services.AddHttpContextAccessor();
 
          // Repository registrations
